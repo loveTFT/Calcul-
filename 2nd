@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculatrice Améliorée</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .calculator {
+            border: 2px solid #333;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+
+        }
+
+        .display {
+            width: 100%;
+            height: 50px;
+            font-size: 2em;
+            text-align: right;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            color: #333;
+            transition: background-color 0.3s ease;
+
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .buttons button {
+            padding: 20px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Animation pour les boutons */
+        .buttons button:hover {
+            transform: scale(1.1); /* L'effet d'agrandissement au survol */
+
+            background-color: #ddd;
+        }
+
+        .buttons button:active {
+            transform: scale(0.9); /* Pétillance au clic */
+            background-color: #bbb;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Color for number buttons */
+        .buttons .number {
+            background-color: #f0f0f0;
+        }
+
+        .buttons .number:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* Color for operation buttons (+, -, *, /) */
+        .buttons .operation {
+            background-color: #ff9f00;
+            color: white;
+        }
+
+        .buttons .operation:hover {
+            background-color: #ff7f00;
+        }
+
+        /* Color for the equals button (=) with shadow */
+        .buttons .equals {
+            background-color: #4CAF50;
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .buttons .equals:hover {
+            background-color: #45a049;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        /* Color for the clear button (C) */
+        .buttons .clear {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .buttons .clear:hover {
+            background-color: #e53935;
+        }
+
+        /* Color for the decimal button (.) */
+        .buttons .decimal {
+            background-color: #b0bec5;
+        }
+
+        .buttons .decimal:hover {
+            background-color: #90a4ae;
+        }
+
+        /* Color for the parentheses buttons */
+        .buttons .parenthesis {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .buttons .parenthesis:hover {
+            background-color: #1976D2;
+        }
+
+        /* Color for Pi button */
+        .buttons .pi {
+            background-color: #9C27B0;
+            color: white;
+        }
+
+        .buttons .pi:hover {
+            background-color: #8E24AA;
+        }
+
+        /* Animation for the display area (loading effect) */
+        .loading {
+            animation: loading 2s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-color: #f9f9f9; }
+            50% { background-color: #e0e0e0; }
+            100% { background-color: #f9f9f9; }
+
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <input type="text" id="display" class="display" disabled>
+        <div class="buttons">
+            <button class="clear" onclick="clearDisplay()">C</button>
+            <button class="parenthesis" onclick="appendToDisplay('(')">(</button>
+            <button class="parenthesis" onclick="appendToDisplay(')')">)</button>
+            <button class="operation" onclick="appendToDisplay('+')">+</button>
+
+            <button class="number" onclick="appendToDisplay('7')">7</button>
+            <button class="number" onclick="appendToDisplay('8')">8</button>
+            <button class="number" onclick="appendToDisplay('9')">9</button>
+            <button class="operation" onclick="appendToDisplay('-')">-</button>
+
+            <button class="number" onclick="appendToDisplay('4')">4</button>
+            <button class="number" onclick="appendToDisplay('5')">5</button>
+            <button class="number" onclick="appendToDisplay('6')">6</button>
+            <button class="operation" onclick="appendToDisplay('*')">*</button>
+
+            <button class="number" onclick="appendToDisplay('1')">1</button>
+            <button class="number" onclick="appendToDisplay('2')">2</button>
+            <button class="number" onclick="appendToDisplay('3')">3</button>
+            <button class="operation" onclick="appendToDisplay('/')">/</button>
+
+            <button class="number" onclick="appendToDisplay('0')">0</button>
+            <button class="decimal" onclick="appendToDisplay('.')">.</button>
+            <button class="equals" onclick="calculateResult()">=</button>
+            <button class="pi" onclick="appendToDisplay(Math.PI)">π</button>
+
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+
+        function clearDisplay() {
+            display.value = '';
+        }
+
+        function appendToDisplay(value) {
+            display.value += value;
+        }
+
+        function calculateResult() {
+            // Ajouter un effet de "chargement" au résultat
+            display.classList.add("loading");
+           
+            setTimeout(() => {
+                try {
+                    // Vérification de la division par zéro
+                    if (display.value.includes("/0")) {
+                        throw new Error("Erreur de calcul : Division par zéro.");
+
+                    }
+                    display.value = eval(display.value);
+                } catch (e) {
+                    display.value = 'Erreur';
+                } finally {
+                    // Retirer l'effet de chargement après 2 secondes
+                    display.classList.remove("loading");
+                }
+            }, 1000); // Temps de chargement (1 seconde)
+        }
+    </script>
+
+</body>
+</html>
