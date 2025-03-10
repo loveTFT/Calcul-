@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculatrice Améliorée</title>
+    <style>
+        /* Animation pour un fond uni qui change progressivement */
+        @keyframes backgroundChange {
+            0% { background-color: #a7c7e7; } /* bleu pâle */
+            20% { background-color: #a8e6cf; } /* vert pâle */
+            40% { background-color: #f9e79f; } /* jaune pâle */
+            60% { background-color: #f7b7a3; } /* orange pâle */
+            80% { background-color: #f7a1b6; } /* rose pâle */
+            100% { background-color: #a7c7e7; } /* retour au bleu pâle */
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            animation: backgroundChange 15s ease infinite; /* animation de fond sur 15s */
+            background-size: cover;
+        }
+
+        .calculator {
+            border: 2px solid #333;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .display {
+            width: 100%;
+            height: 50px;
+            font-size: 2em;
+            text-align: right;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            color: #333;
+            transition: background-color 0.3s ease;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .buttons button {
+            padding: 20px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        /* Animation pour les boutons */
+        .buttons button:hover {
+            transform: scale(1.1); /* L'effet d'agrandissement au survol */
+            background-color: #ddd;
+        }
+
+        .buttons button:active {
+            transform: scale(0.9); /* Pétillance au clic */
+            background-color: #bbb;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Color for number buttons */
+        .buttons .number {
+            background-color: #f0f0f0;
+        }
+
+        .buttons .number:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* Color for operation buttons (+, -, *, /) */
+        .buttons .operation {
+            background-color: #ff9f00;
+            color: white;
+        }
+
+        .buttons .operation:hover {
+            background-color: #ff7f00;
+        }
+
+        /* Color for the equals button (=) with shadow */
+        .buttons .equals {
+            background-color: #4CAF50;
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .buttons .equals:hover {
+            background-color: #45a049;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        /* Color for the clear button (C) */
+        .buttons .clear {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .buttons .clear:hover {
+            background-color: #e53935;
+        }
+
+        /* Color for the decimal button (.) */
+        .buttons .decimal {
+            background-color: #b0bec5;
+        }
+
+        .buttons .decimal:hover {
+            background-color: #90a4ae;
+        }
+
+        /* Color for the parentheses buttons */
+        .buttons .parenthesis {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .buttons .parenthesis:hover {
+            background-color: #1976D2;
+        }
+
+        /* Color for Pi button */
+        .buttons .pi {
+            background-color: #9C27B0;
+            color: white;
+        }
+
+        .buttons .pi:hover {
+            background-color: #8E24AA;
+        }
+
+        /* Ripple Effect */
+        .buttons button:after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.2);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Animation pour le résultat (flash) */
+        @keyframes flash {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .display.flash {
+            animation: flash 0.5s ease-in-out;
+        }
+
+        /* Responsivité mobile */
+        @media (max-width: 600px) {
+            .buttons {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+            .buttons button {
+                font-size: 1.2em;
+                padding: 18px;
+            }
+            .display {
+                font-size: 1.8em;
+                height: 45px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <input type="text" id="display" class="display" disabled>
+        <div class="buttons">
+            <button class="clear" onclick="clearDisplay()">C</button>
+            <button class="parenthesis" onclick="appendToDisplay('(')">(</button>
+            <button class="parenthesis" onclick="appendToDisplay(')')">)</button>
+            <button class="operation" onclick="appendToDisplay('+')">+</button>
+
+            <button class="number" onclick="appendToDisplay('7')">7</button>
+            <button class="number" onclick="appendToDisplay('8')">8</button>
+            <button class="number" onclick="appendToDisplay('9')">9</button>
+            <button class="operation" onclick="appendToDisplay('-')">-</button>
+
+            <button class="number" onclick="appendToDisplay('4')">4</button>
+            <button class="number" onclick="appendToDisplay('5')">5</button>
+            <button class="number" onclick="appendToDisplay('6')">6</button>
+            <button class="operation" onclick="appendToDisplay('*')">*</button>
+
+            <button class="number" onclick="appendToDisplay('1')">1</button>
+            <button class="number" onclick="appendToDisplay('2')">2</button>
+            <button class="number" onclick="appendToDisplay('3')">3</button>
+            <button class="operation" onclick="appendToDisplay('/')">/</button>
+
+            <button class="number" onclick="appendToDisplay('0')">0</button>
+            <button class="decimal" onclick="appendToDisplay('.')">.</button>
+            <button class="equals" onclick="calculateResult()">=</button>
+            <button class="pi" onclick="appendToDisplay(Math.PI)">π</button>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+
+        function clearDisplay() {
+            display.value = '';
+        }
+
+        function appendToDisplay(value) {
+            display.value += value;
+        }
+
+        function calculateResult() {
+            display.classList.add("loading");
+            display.classList.add("flash");
+
+            setTimeout(() => {
+                try {
+                    // Vérification de la division par zéro
+                    if (display.value.includes("/0")) {
+                        throw new Error("Erreur de calcul : Division par zéro.");
+                    }
+                    // Calcul de l'expression
+                    display.value = eval(display.value);
+                } catch (e) {
+                    display.value = 'Erreur';
+                } finally {
+                    display.classList.remove("loading");
+                    setTimeout(() => display.classList.remove("flash"), 500);  // Retirer l'effet flash après l'animation
+                }
+            }, 1000); // Temps de chargement (1 seconde)
+        }
+
+        // Permet d'utiliser les touches du clavier
+        document.addEventListener('keydown', function(event) {
+            let key = event.key;
+            if ('0123456789'.includes(key)) {
+                appendToDisplay(key);
+            } else if (['+', '-', '*', '/'].includes(key)) {
+                appendToDisplay(key);
+            } else if (key === 'Enter') {
+                calculateResult();
+            } else if (key === 'Backspace') {
+                clearDisplay();
+            }
+        });
+    </script>
+
+</body>
+</html>
